@@ -22,7 +22,6 @@ from transformers import (
 )
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
 MODEL_NAME = "vilsonrodrigues/falcon-7b-instruct-sharded"
 
 bnb_config = BitsAndBytesConfig(
@@ -43,9 +42,6 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 tokenizer.pad_token = tokenizer.eos_token
 
 def print_trainable_parameters(model):
-  """
-  Prints the number of trainable parameters in the model.
-  """
   trainable_params = 0
   all_param = 0
   for _, param in model.named_parameters():
@@ -67,7 +63,7 @@ config = LoraConfig(
 model = get_peft_model(model, config)
 print_trainable_parameters(model)
 
-prompt = """
-<human>: midjourney prompt for a girl sit on the mountain
-<assistant>:
+prompt = f"""
+<User>: {prompt}
+<CheckMate>:
 """.strip()

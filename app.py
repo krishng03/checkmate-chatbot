@@ -10,7 +10,6 @@ app.secret_key = 'super-secret-key'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 app.config['SESSION_COOKIE_SECURE'] = True
 
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
@@ -63,9 +62,7 @@ def share():
             new_story = Stories(name=username, message=story_text)
             db.session.add(new_story)
             db.session.commit()
-
     stories = Stories.query.order_by(Stories.id.desc()).all()
-
     return render_template('share.html', stories=stories)
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -77,16 +74,13 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             if user.password == password:
-                session['user'] = user.id  # Store user ID in the session
+                session['user'] = user.id 
                 return render_template('index.html', btn='Logout', name=user.name)
             else:
                 alert_message = 'Invalid Password, Try Again!'
         else:
             alert_message = 'Invalid Credentials, Try Again!'
-    
     return render_template('login.html', alert_message=alert_message)
-
-
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -94,14 +88,12 @@ def signup():
         email = request.form['email']
         password = request.form['password']
         name = request.form['name']
-
         user = User(name=name, email=email, password=password)
         db.session.add(user)
         db.session.commit()
         if user:
-            session['user'] = user.id  # Store user ID in the session
+            session['user'] = user.id
             return render_template('index.html', btn='Logout', name=user.name)
-
     return render_template('signup.html')
 
 
@@ -109,7 +101,6 @@ def signup():
 def logout():
     session.pop('user')
     return redirect('/login')
-
 
 @app.route('/get_response', methods=['POST'])
 def get_response():

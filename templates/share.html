@@ -1,112 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <title>Share Stories</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
-  </head>
 
-  <body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-blue-500 p-4 flex justify-between items-center">
-      <div class="text-white text-lg font-semibold" href="\">
-        <a href="/">Checkmate</a>
-      </div>
-      <nav>
-        <ul class="flex space-x-6 text-white">
-          <li><a href="/about">About</a></li>
-          <li><a href="/contact">Contact Us</a></li>
-        </ul>
-      </nav>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet" />
+  <title>Share Stories</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+</head>
 
-    <!-- Main Content -->
-    <main class="container mx-auto my-10">
-      <div class="text-center">
-        <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
-          Share Your Stories
-        </h1>
-        <p class="text-lg text-gray-700 mb-4">
-          Inspire others by sharing your success stories, poems, and more.
-        </p>
-      </div>
-
-      <!-- Shared Messages Section -->
-      <section class="bg-white p-6 rounded-lg shadow-lg mt-4">
-        <h2 class="text-2xl font-semibold mb-4">Shared Stories</h2>
-
-        <!-- Display shared stories here -->
-        <div id="shared-stories">
-          {% for story in stories %}
-          <div class="bg-gray-200 p-2 mt-2 rounded">
-            <p class="text-sm font-semibold text-black-700 mb-1">
-              {{ story.name | upper }}
-            </p>
-            <p class="text-gray-700">{{ story.message }}</p>
-          </div>
-          {% endfor %}
+<body class="bg-gray-100">
+  <header class="bg-blue-500 p-4 flex justify-between items-center">
+    <div class="text-white text-lg font-semibold" href="\">
+      <a href="/">Checkmate</a>
+    </div>
+    <nav>
+      <ul class="flex space-x-6 text-white">
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container mx-auto my-10">
+    <div class="text-center">
+      <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+        Share Your Stories
+      </h1>
+      <p class="text-lg text-gray-700 mb-4">
+        Inspire others by sharing your success stories, poems, and more.
+      </p>
+    </div>
+    <section class="bg-white p-6 rounded-lg shadow-lg mt-4">
+      <h2 class="text-2xl font-semibold mb-4">Shared Stories</h2>
+      <div id="shared-stories">
+        {% for story in stories %}
+        <div class="bg-gray-200 p-2 mt-2 rounded">
+          <p class="text-sm font-semibold text-black-700 mb-1">
+            {{ story.name | upper }}
+          </p>
+          <p class="text-gray-700">{{ story.message }}</p>
         </div>
-      </section>
+        {% endfor %}
+      </div>
+    </section>
+    <form method="post" action="/share">
+      <div class="mt-4">
+        <input type="text" id="story" name="story" placeholder="Enter your message..."
+          class="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-400 mt-2" />
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">
+          Share
+        </button>
+      </div>
+    </form>
+  </main>
 
-      <form method="post" action="/share">
-        <div class="mt-4">
-          <input
-            type="text"
-            id="story"
-            name="story"
-            placeholder="Enter your message..."
-            class="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-400 mt-2"
-          />
-          <!-- Added margin-top -->
-          <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">
-            Share
-          </button>
-        </div>
-      </form>
-    </main>
-
-    <script>
-      // Function to share a message
-      function shareMessage() {
-        const messageInput = document.getElementById("story")
-        const sharedMessages = document.getElementById("shared-messages")
-
-        // Get the message text from the input
-        const messageText = messageInput.value.trim()
-
-        // Check if the message is not empty
-        if (messageText !== "") {
-          // Create a new message element
-          const messageElement = document.createElement("div")
-          messageElement.className = "bg-gray-200 p-2 mt-2 rounded"
-          messageElement.textContent = messageText
-
-          // Add the message to the top of the shared messages
-          sharedMessages.insertBefore(messageElement, sharedMessages.firstChild)
-
-          // Clear the message input
-          messageInput.value = ""
-        }
+  <script>
+    function shareMessage() {
+      const messageInput = document.getElementById("story")
+      const sharedMessages = document.getElementById("shared-messages")
+      const messageText = messageInput.value.trim()
+      if (messageText !== "") {
+        const messageElement = document.createElement("div")
+        messageElement.className = "bg-gray-200 p-2 mt-2 rounded"
+        messageElement.textContent = messageText
+        sharedMessages.insertBefore(messageElement, sharedMessages.firstChild)
+        messageInput.value = ""
       }
+    }
+    document
+      .getElementById("story")
+      .addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault()
+          shareMessage()
+        } else if (event.key === "Enter" && event.shiftKey) {
+          const messageInput = document.getElementById("story")
+          messageInput.value += "\n"
+        }
+      })
+  </script>
+</body>
 
-      // Keyboard listener for Enter and Shift+Enter keys
-      document
-        .getElementById("story")
-        .addEventListener("keydown", function (event) {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault() // Prevent the default Enter key behavior (e.g., line break)
-            shareMessage() // Call the shareMessage function when Enter is pressed
-          } else if (event.key === "Enter" && event.shiftKey) {
-            // Insert a line break ('\n') in the textarea
-            const messageInput = document.getElementById("story")
-            messageInput.value += "\n"
-          }
-        })
-    </script>
-  </body>
 </html>
