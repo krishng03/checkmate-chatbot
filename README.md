@@ -26,7 +26,7 @@ These instructions will help you set up and run the Checkmate Chatbot on your lo
 ### Installation
 1. Clone this repository to your local machine.
    ```bash
-   git clone https://github.com/yourusername/checkmate-chatbot.git
+   git clone https://github.com/krishng03/checkmate-chatbot.git
    cd checkmate-chatbot
 
 ### Usage
