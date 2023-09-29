@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <!-- Include Tailwind CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="bg-blue-500 p-4 flex justify-between items-center">
+        <div class="text-white text-lg font-semibold">
+            <a href="/">Checkmate</a>
+        </div>
+        <nav>
+            <ul class="flex space-x-6 text-white">
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto my-10">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Chatbot</h1>
+            <p class="text-lg text-gray-700 mb-4">Your AI-powered chatbot for career guidance.</p>
+        </div>
+
+        <!-- Chat History Section -->
+        <section class="bg-white p-6 rounded-lg shadow-lg mt-4">
+            <!-- Chat history will be displayed here -->
+            <div id="chat-history">
+                <!-- Past conversations will be added dynamically here -->
+                {% for conversation in conversations %}
+                <div class="conversation">
+                    <div class="user-prompt">
+                        <p class="font-semibold text-blue-500 text-base">{{name | upper}}</p>
+                        <p>{{ conversation.prompt }}</p>
+                    </div>
+                    <div class="chatbot-response">
+                        <p class="font-semibold text-green-500 text-base">CheckMate</p>
+                        <p>{{ conversation.answer }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- User Input Section -->
+        <div class="mt-4 flex">
+            <input type="text" id="user-input" placeholder="Enter your message..."
+                class="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-400 mt-2">
+            <button onclick="sendMessage()" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 mt-2">Send</button>
+        </div>
+    </main>
+
+    <script>
+        // JavaScript for handling user input and displaying messages
+        function sendMessage() {
+            var userInput = document.getElementById("user-input").value;
+            if (userInput.trim() !== "") {
+                // Display the user's name (in all caps) and question
+                displayUserMessage("{{ name | upper }}", userInput);
+
+                // Show a waiting animation
+                displayWaitingAnimation();
+
+                // Send the user's message to the server via AJAX
+                fetch("/get_response", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ user_prompt: userInput }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        // Remove the waiting animation
+                        removeWaitingAnimation();
+
+                        // Display 'CHECKMATE' and the chatbot's response
+                        displayBotMessage("CHECKMATE", data.response);
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+
+                document.getElementById("user-input").value = "";
+            }
+        }
+
+        // Function to display user's name (in all caps) and question
+        function displayUserMessage(name, message) {
+            var chatHistory = document.getElementById("chat-history");
+            var userMessageDiv = document.createElement("div");
+            userMessageDiv.className = "conversation user-prompt text-gray-1200 p-2 rounded-md ml-auto";
+            userMessageDiv.innerHTML = `<p class="font-semibold text-blue-500">${name.toUpperCase()}</p><p>${message}</p>`;
+            chatHistory.appendChild(userMessageDiv);
+        }
+
+        // Function to display a waiting animation
+        function displayWaitingAnimation() {
+            var chatHistory = document.getElementById("chat-history");
+            var waitingDiv = document.createElement("div");
+            waitingDiv.className = "conversation bot-message bg-gray-200 p-2 rounded-md mt-2 text-center";
+
+            // Create the three-dot animation using CSS
+            waitingDiv.innerHTML = `
+            <div class="flex justify-center items-center">
+                <div class="h-2 w-2 bg-gray-600 rounded-full animate-bounce mx-1"></div>
+                <div class="h-2 w-2 bg-gray-600 rounded-full animate-bounce mx-1 animation-delay-300"></div>
+                <div class="h-2 w-2 bg-gray-600 rounded-full animate-bounce mx-1 animation-delay-600"></div>
+            </div>
+        `;
+
+            chatHistory.appendChild(waitingDiv);
+        }
+
+        // Function to remove the waiting animation
+        function removeWaitingAnimation() {
+            var chatHistory = document.getElementById("chat-history");
+            var waitingDiv = chatHistory.querySelector(".conversation.bot-message.bg-gray-200.p-2.rounded-md.mt-2.text-center");
+            if (waitingDiv) {
+                chatHistory.removeChild(waitingDiv);
+            }
+        }
+
+        // Function to display 'CHECKMATE' and the chatbot's response
+        function displayBotMessage(name, message) {
+            var chatHistory = document.getElementById("chat-history");
+            var botMessageDiv = document.createElement("div");
+            botMessageDiv.className = "conversation bot-message bg-gray-200 p-2 rounded-md mt-2";
+            botMessageDiv.innerHTML = `<p class="font-semibold text-green-500">CheckMate</p><p>${message}</p>`;
+            chatHistory.appendChild(botMessageDiv);
+        }
+
+        // Add a keyboard listener for the "Enter" key
+        document.getElementById("user-input").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent the default Enter key behavior (e.g., form submission)
+                sendMessage(); // Call the sendMessage function when Enter is pressed
+            }
+        });
+    </script>
+
+</body>
+
+</html>
