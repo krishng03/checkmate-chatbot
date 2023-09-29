@@ -28,3 +28,17 @@ These instructions will help you set up and run the Checkmate Chatbot on your lo
    ```bash
    git clone https://github.com/yourusername/checkmate-chatbot.git
    cd checkmate-chatbot
+
+### Usage
+- Use the chatbot to get personalized exam preparation tips and assistance.
+- Share your success stories, poems, or other inspirational content on the platform.
+- Explore different sections of the website for a seamless user experience.
+
+### Contributing
+Contributions are welcome! If you'd like to contribute to the development of Checkmate Chatbot, please follow these steps:
+
+- Fork the repository on GitHub.
+- Create a new branch for your feature or bug fix.
+- Make your changes and commit them.
+- Push your changes to your fork.
+- Submit a pull request to the main repository.
